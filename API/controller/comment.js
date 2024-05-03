@@ -29,16 +29,14 @@ export const getNumComments = async (req, res) => {
 
 export const addComment = async (req, res) => {
   const { userId, postId, contentText } = req.body;
+  console.log(req.body);
+
+  // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
   try {
-    let result = await pool.query(
-      "SELECT MAX(id + 1) as missing_id FROM comments;"
-    );
-    const newCommentId = result[0][0].missing_id;
-    const data = [newCommentId, userId, postId, contentText, new Date()];
-    let command =
-      "INSERT INTO comments (id, ownerId, postId, contentText, createdAt, deletedAt) VALUES (?, ?, ?, ?, ?, NULL);";
+    const command = "CALL createComment(?, ?, ?)";
+    const data = [userId, postId, contentText];
     await pool.query(command, data);
-    res.send("Add comment successfully");
+    res.send("Comment added successfully");
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -53,11 +51,11 @@ export const deleteComment = async (req, res) => {
     if (comments.length === 0) {
       throw new Error("You are not the owner of this comment");
     }
-    const command1 = `update comments set deletedAt = CURRENT_TIMESTAMP where id = (?);`;
+
+    // DELETE FROM comments WHERE id = (?)
+    const command = "DELETE FROM comments WHERE id = (?)";
     const data = [commentId];
-    await pool.query(command1, data);
-    const command2 = `update user_react_comment set deletedAt = CURRENT_TIMESTAMP where commentId = (?);`;
-    await pool.query(command2, data);
+    await pool.query(command, data);
     res.send("Delete comment successfully");
   } catch (err) {
     res.status(500).send(err.message);
