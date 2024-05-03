@@ -1,4 +1,4 @@
-import pool from "../database.js";
+import pool from "../../database.js";
 import checkValidEmail from "../Utils/checkValidEmail.js";
 import checkValidFullName from "../Utils/checkValidFullName.js";
 import checkValidUsername from "../Utils/checkValidUsername.js";
