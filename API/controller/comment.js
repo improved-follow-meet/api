@@ -1,4 +1,4 @@
-import pool from "../database.js";
+import pool from "../../database.js";
 
 export const getComments = async (req, res) => {
   const { postId } = req.query;

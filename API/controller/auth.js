@@ -1,5 +1,5 @@
 import * as argon2 from "argon2";
-import pool from "../database.js";
+import pool from "../../database.js";
 import checkValidUsername from "../Utils/checkValidUsername.js";
 import checkValidEmail from "../Utils/checkValidEmail.js";
 import checkValidPassword from "../Utils/checkValidPassword.js";
