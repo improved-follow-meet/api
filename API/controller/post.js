@@ -49,19 +49,12 @@ export const addPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   const { postId, userId } = req.body;
+
+  // CALL STORED PROCEDURE deletePost(postId, userId)
   try {
-    // check if the user is the owner of the post
-    const command0 =
-      "SELECT * FROM posts WHERE id = (?) and ownerId = (?);";
-    const [posts, fields] = await pool.query(command0, [postId, userId]);
-    if (posts.length === 0) {
-      throw new Error("You are not the owner of this post");
-    }
-
-    const command = 'DELETE FROM posts WHERE id = (?)';
-    const data = [postId];
+    const command = 'CALL deletePost(?, ?)';
+    const data = [postId, userId];
     await pool.query(command, data);
-
     res.send("Post deleted successfully");
   } catch (err) {
     res.status(500).send(err.message);
