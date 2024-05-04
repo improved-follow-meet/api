@@ -1,5 +1,5 @@
 import * as argon2 from "argon2";
-import pool from "../database.js";
+import pool from "../../database.js";
 import checkValidUsername from "../Utils/checkValidUsername.js";
 import checkValidEmail from "../Utils/checkValidEmail.js";
 import checkValidPassword from "../Utils/checkValidPassword.js";
@@ -45,13 +45,8 @@ export const register = async (req, res) => {
     await checkValidFullName(fullName);
     await checkUserNotExist(username);
 
-    let result = await pool.query(
-      "SELECT COUNT(*) as count FROM users WHERE deletedAt is null"
-    );
-    let id = result[0][0].count + 1; // id = total number of users + 1
     let passwordHash = await argon2.hash(password);
     const data = [
-      id,
       passwordHash,
       username,
       "https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg",
@@ -61,7 +56,7 @@ export const register = async (req, res) => {
       gender,
     ];
     await pool.query(
-      "INSERT INTO users (id, passwordHash, username, profilePicture, coverPicture, fullName, email, gender, deletedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)",
+      "INSERT INTO users (passwordHash, username, profilePicture, coverPicture, fullName, email, gender, deletedAt) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)",
       data
     );
     res.send("Register successfully");

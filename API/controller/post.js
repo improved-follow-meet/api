@@ -1,5 +1,5 @@
 import e from "express";
-import pool from "../database.js";
+import pool from "../../database.js";
 
 export const getPostsUserFollowing = async (req, res) => {
   const { userId } = req.query;
@@ -35,15 +35,11 @@ export const getPostsOfUser = async (req, res) => {
 export const addPost = async (req, res) => {
   const { userId, contentImg, contentText } = req.body;
   console.log(req.body);
+
+  // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
   try {
-    const result = await pool.query(
-      "SELECT MAX(id + 1) as missing_id FROM posts;"
-    );
-    const newPostId = result[0][0].missing_id;
-    console.log(newPostId);
-    const data = [newPostId, userId, contentImg, contentText, new Date()];
-    const command =
-      "INSERT INTO posts (id, ownerId, contentImg, contentText, createdAt, deletedAt) VALUES (?, ?, ?, ?, ?, NULL)";
+    const command = 'CALL createPost(?, ?, ?)';
+    const data = [userId, contentImg, contentText];
     await pool.query(command, data);
     res.send("Post added successfully");
   } catch (err) {
@@ -53,23 +49,12 @@ export const addPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   const { postId, userId } = req.body;
+
+  // CALL STORED PROCEDURE deletePost(postId, userId)
   try {
-    // check if the user is the owner of the post
-    const command0 =
-      "SELECT * FROM posts WHERE id = (?) and ownerId = (?) and deletedAt is null;";
-    const [posts, fields] = await pool.query(command0, [postId, userId]);
-    if (posts.length === 0) {
-      throw new Error("You are not the owner of this post");
-    }
-    const command = `update posts set deletedAt = CURRENT_TIMESTAMP where id = (?);`;
-    const data = [postId];
+    const command = 'CALL deletePost(?, ?)';
+    const data = [postId, userId];
     await pool.query(command, data);
-    const command2 = `update comments set deletedAt = CURRENT_TIMESTAMP where postId =(?);`;
-    await pool.query(command2, data);
-    const command3 = `update user_react_post set deletedAt = CURRENT_TIMESTAMP where postId = (?);`;
-    await pool.query(command3, data);
-    const command4 = `update user_react_comment set deletedAt = CURRENT_TIMESTAMP where commentId in (select id from comments where postId = (?));`;
-    await pool.query(command4, data);
     res.send("Post deleted successfully");
   } catch (err) {
     res.status(500).send(err.message);
