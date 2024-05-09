@@ -24,7 +24,7 @@ export const getPostsOfUser = async (req, res) => {
   const { userId } = req.query;
   try {
     let command =
-      "SELECT * FROM posts WHERE ownerId = (?) and deletedAt is null ORDER BY createdAt DESC;";
+      "SELECT * FROM posts WHERE ownerId = (?) ORDER BY createdAt DESC;";
     const [posts, fields] = await pool.query(command, [userId]);
     res.send(posts);
   } catch (err) {
