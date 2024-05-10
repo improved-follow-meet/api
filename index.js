@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -17,8 +18,9 @@ import activitiesRoutes from "./API/routes/activities.js";
 /* CONFIGUARATION */
 dotenv.config();
 const app = express();
-const port = parseInt(process.env.PORT);
+const port = 3000;
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
