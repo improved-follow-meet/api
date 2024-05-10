@@ -29,6 +29,7 @@ export const getPostsOfUser = async (req, res) => {
       index: "posts",
       filter_path: ["hits.hits._source", "aggregations.*"],
       sort: ["id:asc"],
+      size: 10000,
       body: {
         query: {
           match: { ownerId: userId },
