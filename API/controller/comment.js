@@ -28,7 +28,9 @@ export const getNumComments = async (req, res) => {
 };
 
 export const addComment = async (req, res) => {
-  const { userId, postId, contentText } = req.body;
+  const userId = req.user.id;
+  const { postId, contentText } = req.body;
+
   console.log(req.body);
 
   // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
