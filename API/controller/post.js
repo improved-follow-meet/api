@@ -1,5 +1,6 @@
 import e from "express";
 import pool from "../../database.js";
+import esClient from "../../elasticSearch.js";
 
 export const getPostsUserFollowing = async (req, res) => {
   const { userId } = req.query;
@@ -22,15 +23,25 @@ export const getPostsUserFollowing = async (req, res) => {
 
 export const getPostsOfUser = async (req, res) => {
   const { userId } = req.query;
+
   try {
-    let command =
-      "SELECT * FROM posts WHERE ownerId = (?) and deletedAt is null ORDER BY createdAt DESC;";
-    const [posts, fields] = await pool.query(command, [userId]);
-    res.send(posts);
+    const { body } = await esClient.search({
+      index: "posts",
+      filter_path: ["hits.hits._source", "aggregations.*"],
+      sort: ["id:asc"],
+      body: {
+        query: {
+          match: { ownerId: userId },
+        },
+      },
+    });
+
+    console.log(body.hits.hits);
+    res.send(body.hits.hits.map((hit) => hit._source));
   } catch (err) {
     res.status(500).send(err.message);
   }
-};
+}
 
 export const addPost = async (req, res) => {
   const { userId, contentImg, contentText } = req.body;
@@ -60,3 +71,5 @@ export const deletePost = async (req, res) => {
     res.status(500).send(err.message);
   }
 };
+
+
