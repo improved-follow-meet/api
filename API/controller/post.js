@@ -22,15 +22,13 @@ export const getPostsUserFollowing = async (req, res) => {
 };
 
 export const getPostsOfUser = async (req, res) => {
-  const { userId, page } = req.query;
+  const { userId } = req.query;
 
   try {
     const { body } = await esClient.search({
       index: "posts",
       filter_path: ["hits.hits._source", "aggregations.*"],
       sort: ["id:asc"],
-      size: 5,
-      from: (page - 1) * 5,
       body: {
         query: {
           match: { ownerId: userId },
