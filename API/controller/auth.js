@@ -42,13 +42,13 @@ export const login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      path: "/api/auth"
+      path: "/api"
     });
     res.cookie('refresh', refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      path: "/api/auth"
+      path: "/api"
     });
     
     await pool.query(
@@ -109,13 +109,13 @@ export const logout = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      path: "/api/auth"
+      path: "/api"
     });
     res.clearCookie('refresh', {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      path: "/api/auth"
+      path: "/api"
     });
     res.send("Logout successfully");
   } catch (err) {
