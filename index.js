@@ -17,7 +17,7 @@ import activitiesRoutes from "./API/routes/activities.js";
 /* CONFIGUARATION */
 dotenv.config();
 const app = express();
-const port = parseInt(process.env.PORT);
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(helmet());
