@@ -27,12 +27,12 @@ export const refreshAccessToken = async (req, res) => {
             "id": `${userId}`,
             "createAt": new Date(),
         }
-        const accessToken = createAccessToken(payload);
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {expiresIn: '30s'});
         res.cookie('access', accessToken, {
           httpOnly: true,
           secure: true,
           sameSite: "None",
-          path: "/api/auth"
+          path: "/api/"
         });
         // res.send(payload);
         // console.log(payload);
