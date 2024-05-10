@@ -1,7 +1,8 @@
 import pool from "../../database.js";
 
 export const isFollowed = async (req, res) => {
-  const { userId, followingId } = req.query;
+  const { userId } = req.user.id;
+  const { followingId } = req.query;
   try {
     let command =
       "SELECT * FROM user_follow_user WHERE userSourceId = (?) AND userTargetId = (?) and deletedAt is null;";
@@ -17,7 +18,8 @@ export const isFollowed = async (req, res) => {
 };
 
 export const followUser = async (req, res) => {
-  const { userId, followingId } = req.body;
+  const { userId } = req.user.id;
+  const { followingId } = req.body;
   try {
     // check if followed
     let command =
@@ -35,7 +37,8 @@ export const followUser = async (req, res) => {
 };
 
 export const unfollowUser = async (req, res) => {
-  const { userId, followingId } = req.body;
+  const { userId } = req.user.id;
+  const { followingId } = req.body;
   try {
     // check if followed
     let command =
@@ -54,7 +57,7 @@ export const unfollowUser = async (req, res) => {
 };
 
 export const getFollowers = async (req, res) => {
-  const { userId } = req.query;
+  const { userId } = req.user.id;
   try {
     let command =
       "SELECT * FROM user_follow_user WHERE userTargetId = (?) and deletedAt is null;";
@@ -66,7 +69,7 @@ export const getFollowers = async (req, res) => {
 };
 
 export const getOnlineFollowings = async (req, res) => {
-  const { userId } = req.query;
+  const { userId } = req.user.id;
   try {
     // get online followings order by lastLogout
     let command =

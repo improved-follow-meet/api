@@ -1,7 +1,7 @@
 import pool from "../../database.js";
 
 export const getLatestActivities = async (req, res) => {
-  const { userId } = req.query;
+  const { userId } = req.user.id;
   try {
     let command = `SELECT urp.*, 'user_react_post' as activity_type
     FROM user_react_post AS urp

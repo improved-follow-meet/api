@@ -13,7 +13,8 @@ export const getReacts = async (req, res) => {
 };
 
 export const isReacted = async (req, res) => {
-  const { postId, userId } = req.query;
+  const { userId } = req.user.id;
+  const { postId } = req.query;
   try {
     let command =
       "SELECT * FROM user_react_post WHERE postId = (?) AND userId = (?) and deletedAt is null;";
@@ -29,7 +30,8 @@ export const isReacted = async (req, res) => {
 };
 
 export const reactPost = async (req, res) => {
-  const { postId, userId } = req.body;
+  const { userId } = req.user.id;
+  const { postId } = req.body;
   try {
     let command =
       "SELECT * FROM user_react_post WHERE postId = (?) AND userId = (?) and deletedAt is null;";
@@ -46,7 +48,8 @@ export const reactPost = async (req, res) => {
 };
 
 export const unreactPost = async (req, res) => {
-  const { postId, userId } = req.body;
+  const { userId } = req.user.id;
+  const { postId } = req.body;
   try {
     let command =
       "SELECT * FROM user_react_post WHERE postId = (?) AND userId = (?) and deletedAt is null ;";

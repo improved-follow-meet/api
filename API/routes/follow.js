@@ -10,10 +10,10 @@ import { authenticateToken } from "../middleware/auth.middleware.js";
 
 const router = Express.Router();
 
-router.get("/isFollowed", isFollowed);
+router.get("/isFollowed", authenticateToken, isFollowed);
 router.post("/followUser", authenticateToken, followUser);
 router.post("/unfollowUser", authenticateToken, unfollowUser);
-router.get("/getFollowers", getFollowers);
-router.get("/getOnlineFollowings", getOnlineFollowings);
+router.get("/getFollowers", authenticateToken, getFollowers);
+router.get("/getOnlineFollowings", authenticateToken, getOnlineFollowings);
 
 export default router;
