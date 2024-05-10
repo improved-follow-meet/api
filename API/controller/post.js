@@ -1,6 +1,9 @@
 import e from "express";
 import pool from "../../database.js";
+<<<<<<< Updated upstream
 import esClient from "../../elasticSearch.js";
+=======
+>>>>>>> Stashed changes
 
 export const getPostsUserFollowing = async (req, res) => {
   const { userId } = req.query;
