@@ -14,6 +14,7 @@ import userRoutes from "./API/routes/user.js";
 import followRoutes from "./API/routes/follow.js";
 import reactRoutes from "./API/routes/react.js";
 import activitiesRoutes from "./API/routes/activities.js";
+import { createAccessToken, createRefreshToken, refreshAccessToken } from "./API/controller/jwt.js";
 
 /* CONFIGUARATION */
 dotenv.config();
@@ -52,7 +53,20 @@ app.use("/api/activities", activitiesRoutes);
 
 // Test send cookies
 app.get("/cookies", (req, res) => {
-  res.cookie("cac", "dai");
+  const accessToken = createAccessToken({
+    "id": 1,
+    "createAt": new Date(),
+  });
+
+  // Create refresh token
+  const refreshToken = createRefreshToken({
+    "id": 1,
+  });
+
+  // Send cookies
+  res.cookie('access', accessToken);
+  res.cookie('refresh', refreshToken);
+
   res.send("Cookies sent");
 });
 
