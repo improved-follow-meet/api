@@ -41,14 +41,12 @@ export const login = async (req, res) => {
     res.cookie('access', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "None",
-      path: "/api/"
+      sameSite: "None"
     });
     res.cookie('refresh', refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "None",
-      path: "/api/"
+      sameSite: "None"
     });
     
     await pool.query(
@@ -105,18 +103,8 @@ export const logout = async (req, res) => {
       new Date(),
       userId,
     ]);
-    res.clearCookie('access', {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      path: "/api/"
-    });
-    res.clearCookie('refresh', {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      path: "/api/"
-    });
+    res.clearCookie('access');
+    res.clearCookie('refresh');
     res.send("Logout successfully");
   } catch (err) {
     console.error(err.message);
