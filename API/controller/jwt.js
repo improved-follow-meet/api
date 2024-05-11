@@ -31,8 +31,7 @@ export const refreshAccessToken = async (req, res) => {
         res.cookie('access', accessToken, {
           httpOnly: true,
           secure: true,
-          sameSite: "None",
-          path: "/api/"
+          sameSite: "None"
         });
         // res.send(payload);
         // console.log(payload);
