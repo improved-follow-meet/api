@@ -28,7 +28,9 @@ export const getNumComments = async (req, res) => {
 };
 
 export const addComment = async (req, res) => {
-  const { userId, postId, contentText } = req.body;
+  const userId = req.user.id;
+  const { postId, contentText } = req.body;
+
   console.log(req.body);
 
   // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
@@ -43,7 +45,8 @@ export const addComment = async (req, res) => {
 };
 
 export const deleteComment = async (req, res) => {
-  const { commentId, userId } = req.body;
+  const userId = req.user.id;
+  const { commentId } = req.body;
   try {
     const command0 =
       "SELECT * FROM comments WHERE id = (?) and ownerId = (?) and deletedAt is null;";
