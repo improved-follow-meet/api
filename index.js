@@ -64,8 +64,17 @@ app.get("/cookies", (req, res) => {
   });
 
   // Send cookies
-  res.cookie('access', accessToken);
-  res.cookie('refresh', refreshToken);
+  res.cookie('access', accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None"
+  });
+
+  res.cookie('refresh', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None"
+  });
 
   res.send("Cookies sent");
 });
