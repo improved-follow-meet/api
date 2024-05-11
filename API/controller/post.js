@@ -3,7 +3,7 @@ import pool from "../../database.js";
 import esClient from "../../elasticSearch.js";
 
 export const getPostsUserFollowing = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   try {
     let command =
       "SELECT * FROM posts INNER JOIN user_follow_user ON posts.ownerId = user_follow_user.userTargetId WHERE user_follow_user.deletedAt is null and posts.deletedAt is null and user_follow_user.userSourceId = (?) order by posts.createdAt desc;";
@@ -45,7 +45,7 @@ export const getPostsOfUser = async (req, res) => {
 }
 
 export const addPost = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   const { contentImg, contentText } = req.body;
   console.log(req.body);
 
@@ -61,7 +61,7 @@ export const addPost = async (req, res) => {
 };
 
 export const deletePost = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   const { postId } = req.body;
 
   // CALL STORED PROCEDURE deletePost(postId, userId)

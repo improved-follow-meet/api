@@ -13,7 +13,7 @@ export const getReacts = async (req, res) => {
 };
 
 export const isReacted = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   const { postId } = req.query;
   try {
     let command =
@@ -30,7 +30,7 @@ export const isReacted = async (req, res) => {
 };
 
 export const reactPost = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   const { postId } = req.body;
   try {
     let command =
@@ -48,7 +48,7 @@ export const reactPost = async (req, res) => {
 };
 
 export const unreactPost = async (req, res) => {
-  const { userId } = req.user.id;
+  const userId = req.user.id;
   const { postId } = req.body;
   try {
     let command =
