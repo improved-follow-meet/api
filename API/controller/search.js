@@ -15,6 +15,10 @@ export const searchPost = async (req, res) => {
         },
       },
     });
+    
+    if (body.hits.total.value === 0) {
+      res.status(404).send("No posts found");
+    }
 
     console.log(body.hits.hits);
     res.send(body.hits.hits.map((hit) => hit._source));
