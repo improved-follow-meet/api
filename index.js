@@ -27,7 +27,15 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+
+// cors with credentials
+app.use(
+  cors({
+    origin: process.env.REACT_APP_BASE_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+    credentials: true
+  })
+);
 
 /* ROUTES */
 app.get("/", async (req, res) => {
@@ -41,6 +49,12 @@ app.use("/api/user", userRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/react", reactRoutes);
 app.use("/api/activities", activitiesRoutes);
+
+// Test send cookies
+app.get("/cookies", (req, res) => {
+  res.cookie("cac", "dai");
+  res.send("Cookies sent");
+});
 
 /* SERVER */
 app.listen(port, async () => {
