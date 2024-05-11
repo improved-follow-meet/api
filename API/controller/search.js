@@ -7,7 +7,7 @@ export const searchPost = async (req, res) => {
     const { body } = await esClient.search({
       index: "posts",
       filter_path: ["hits.hits._source", "aggregations.*"],
-      sort: ["id:asc"],
+      sort: ["_score:desc"],
       size: 5,
       body: {
         query: {
@@ -16,8 +16,9 @@ export const searchPost = async (req, res) => {
       },
     });
     
-    if (body.hits.total.value === 0) {
-      res.status(404).send("No posts found");
+    if (!body.hits) {
+      res.status(404).send("No results found");
+      return;
     }
 
     console.log(body.hits.hits);
