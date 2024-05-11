@@ -22,7 +22,7 @@ export const getPostsUserFollowing = async (req, res) => {
 };
 
 export const getPostsOfUser = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.query.userId;
 
   try {
     const { body } = await esClient.search({
