@@ -37,6 +37,11 @@ export const getPostsOfUser = async (req, res) => {
       },
     });
 
+    if (!body.hits) {
+      res.status(404).send("No results found");
+      return;
+    }
+
     console.log(body.hits.hits);
     res.send(body.hits.hits.map((hit) => hit._source));
   } catch (err) {

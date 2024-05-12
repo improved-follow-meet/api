@@ -14,6 +14,7 @@ import userRoutes from "./API/routes/user.js";
 import followRoutes from "./API/routes/follow.js";
 import reactRoutes from "./API/routes/react.js";
 import activitiesRoutes from "./API/routes/activities.js";
+import searchRoutes from "./API/routes/search.js";
 import { createAccessToken, createRefreshToken, refreshAccessToken } from "./API/controller/jwt.js";
 
 /* CONFIGUARATION */
@@ -50,6 +51,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/react", reactRoutes);
 app.use("/api/activities", activitiesRoutes);
+app.use("/api/search", searchRoutes);
 
 // Test send cookies
 app.get("/cookies", (req, res) => {
