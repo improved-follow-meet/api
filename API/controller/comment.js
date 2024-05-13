@@ -4,15 +4,6 @@ import esClient from "../../elasticSearch.js";
 export const getComments = async (req, res) => {
   const postId = req.query.postId;
 
-  // GET comments / _search
-  // {
-  //   "query": {
-  //     "match": {
-  //       "postId": 3
-  //     }
-  //   }
-  // }
-
   try {
     const { body } = await esClient.search({
       index: "comments",
