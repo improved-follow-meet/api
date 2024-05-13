@@ -28,7 +28,7 @@ export const getPostsOfUser = async (req, res) => {
     const { body } = await esClient.search({
       index: "posts",
       filter_path: ["hits.hits._source", "aggregations.*"],
-      sort: ["id:asc"],
+      sort: ["createdAt:desc"],
       size: 10000,
       body: {
         query: {
