@@ -7,7 +7,7 @@ export const searchPost = async (req, res) => {
     const { body } = await esClient.search({
       index: "posts",
       filter_path: ["hits.hits._source", "aggregations.*"],
-      sort: ["_score:desc"],
+      sort: ["_score:desc, createdAt:desc"],
       size: 5,
       body: {
         query: {
