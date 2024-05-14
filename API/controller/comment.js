@@ -1,15 +1,29 @@
 import pool from "../../database.js";
+import esClient from "../../elasticSearch.js";
 
 export const getComments = async (req, res) => {
-  const { postId } = req.query;
+  const postId = req.query.postId;
+
   try {
-    let command =
-      "SELECT * FROM comments WHERE postId = (?) and deletedAt is null;";
-    const [comments, fields] = await pool.query(command, [postId]);
-    await comments.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
+    const { body } = await esClient.search({
+      index: "comments",
+      filter_path: ["hits.hits._source", "aggregations.*"],
+      sort: ["createdAt:desc"],
+      size: 10000,
+      body: {
+        query: {
+          match: { postId: postId },
+        },
+      },
     });
-    res.send(comments);
+
+    if (!body.hits) {
+      res.status(404).send("No results found");
+      return;
+    }
+
+    console.log(body.hits.hits);
+    res.send(body.hits.hits.map((hit) => hit._source));
   } catch (err) {
     res.status(500).send(err.message);
   }
