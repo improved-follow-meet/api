@@ -32,7 +32,7 @@ export const getPostsOfUser = async (req, res) => {
       size: 10000,
       body: {
         query: {
-          match: { ownerId: userId },
+          match: { ownerId: userId, deletedAt: null },
         },
       },
     });
@@ -70,7 +70,7 @@ export const deletePost = async (req, res) => {
   const { postId } = req.body;
 
   try {
-    const checkDeleted = await pool.query('SELECT deletedAT FROM posts WHERE id = (?);', [postId]);
+    const checkDeleted = await pool.query('SELECT deletedAT FROM posts WHERE ownerId = (?) AND id = (?);', [userId, postId]);
     if (checkDeleted[0][0].deletedAT != null) {
       res.send('Delete failed. Post deleted.');
       return;
