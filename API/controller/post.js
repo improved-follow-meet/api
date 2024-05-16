@@ -69,12 +69,18 @@ export const deletePost = async (req, res) => {
   const userId = req.user.id;
   const { postId } = req.body;
 
-  // CALL STORED PROCEDURE deletePost(postId, userId)
   try {
-    const command = 'CALL deletePost(?, ?)';
-    const data = [postId, userId];
-    await pool.query(command, data);
-    res.send("Post deleted successfully");
+    const checkDeleted = await pool.query('SELECT deletedAT FROM posts WHERE id = (?);', [postId]);
+    if (checkDeleted[0][0].deletedAT != null) {
+      res.send('Delete failed. Post deleted.');
+      return;
+    }
+    else {
+      const command = 'CALL deleteFromPosts(?, ?);';
+      const data = [postId, userId];
+      await pool.query(command, data);
+      res.send("Post deleted successfully");
+    }
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -84,7 +90,7 @@ export const getDeletedPosts = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const command = "SELECT * FROM post_trash_can WHERE ownerId = (?) ORDER BY deletedAt DESC;";
+    const command = "SELECT * FROM posts AS p INNER JOIN (SELECT id FROM post_trash_can WHERE ownerId = (?)) AS pc USING(id) ORDER BY p.deletedAt DESC;";
     const [posts, fields2] = await pool.query(command, [userId]);
     res.send(posts);
   } catch (err) {
@@ -93,12 +99,11 @@ export const getDeletedPosts = async (req, res) => {
 }
 
 export const restoreDeletedPost = async (req, res) => {
-  const userId = req.user.id;
   const { deletedPostId } = req.body;
 
   try {
-    const command = "DELETE FROM post_trash_can WHERE id = (?) AND ownerId = (?);";
-    const respone = await pool.query(command, [deletedPostId, userId]);
+    const command = "CALL restorePost(?);";
+    const respone = await pool.query(command, [deletedPostId]);
     // console.log(respone); 
     const affectedRows = respone[0].affectedRows;
 
