@@ -16,14 +16,14 @@ import reactRoutes from "./API/routes/react.js";
 import activitiesRoutes from "./API/routes/activities.js";
 import searchRoutes from "./API/routes/search.js";
 import { createAccessToken, createRefreshToken, refreshAccessToken } from "./API/controller/jwt.js";
-import rateLimiterMiddleware from "./API/middleware/ratelimiter.js";
+// import rateLimiterMiddleware from "./API/middleware/ratelimiter.js";
 
 /* CONFIGUARATION */
 dotenv.config();
 const app = express();
 const port = 3000;
 
-app.use(rateLimiterMiddleware)
+// app.use(rateLimiterMiddleware)
 app.use(cookieParser());
 app.use(express.json());
 app.use(helmet());
