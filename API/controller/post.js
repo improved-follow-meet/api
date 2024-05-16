@@ -32,9 +32,20 @@ export const getPostsOfUser = async (req, res) => {
       size: 10000,
       body: {
         query: {
-          match: { ownerId: userId, deletedAt: null },
+          bool: {
+            must_not: [
+              {
+                exists: {
+                  field: "deletedAt"
+                }
+              }
+            ],
+            must: [
+              { match: { ownerId: userId } },
+            ],
+          },
         },
-      },
+      }
     });
 
     if (!body.hits) {
