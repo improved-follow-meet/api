@@ -32,7 +32,7 @@ export const getPostsOfUser = async (req, res) => {
       size: 10000,
       body: {
         query: {
-          match: { ownerId: userId },
+          match: { ownerId: userId, deletedAt: null },
         },
       },
     });
