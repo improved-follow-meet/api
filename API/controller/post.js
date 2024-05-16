@@ -101,9 +101,36 @@ export const getDeletedPosts = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const command = "SELECT * FROM posts AS p INNER JOIN (SELECT id FROM post_trash_can WHERE ownerId = (?)) AS pc USING(id) ORDER BY p.deletedAt DESC;";
-    const [posts, fields2] = await pool.query(command, [userId]);
-    res.send(posts);
+    const { body } = await esClient.search({
+      index: "posts",
+      filter_path: ["hits.hits._source", "aggregations.*"],
+      sort: ["createdAt:desc"],
+      size: 10000,
+      body: {
+        query: {
+          bool: {
+            must: [
+              {
+                exists: {
+                  field: "deletedAt"
+                }
+              }
+            ],
+            must: [
+              { match: { ownerId: userId } },
+            ],
+          },
+        },
+      }
+    });
+
+    if (!body.hits) {
+      res.status(404).send("No results found");
+      return;
+    }
+
+    console.log(body.hits.hits);
+    res.send(body.hits.hits.map((hit) => hit._source));
   } catch (err) {
     res.status(500).send(err.message);
   }
