@@ -80,4 +80,14 @@ export const deletePost = async (req, res) => {
   }
 };
 
+export const getDeletedPosts = async (req, res) => {
+  const userId = req.user.id;
 
+  try {
+    const command = 'SELECT * FROM post_trash_can WHERE ownerId = (?)';
+    const posts = await pool.query(command, userId);
+    res.send(posts);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
