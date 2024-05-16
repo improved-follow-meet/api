@@ -41,16 +41,42 @@ export const getNumComments = async (req, res) => {
   }
 };
 
+const wordFilter = async (sentence) => {
+  let words = sentence.split(" ");
+  let newSentence = "";
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i];
+    try {
+      const { body } = await esClient.search({
+        index: "wordfilter",
+        body: {
+          query: {
+            match: { word: word },
+          },
+        },
+      });
+      if (body.hits.hits.length > 0) {
+        newSentence += "*".repeat(word.length) + " ";
+      } else {
+        newSentence += word + " ";
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  return newSentence;
+}
+
 export const addComment = async (req, res) => {
   const userId = req.user.id;
   const { postId, contentText } = req.body;
-
+  const newContentText = await wordFilter(contentText);
   console.log(req.body);
 
   // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
   try {
     const command = "CALL createComment(?, ?, ?)";
-    const data = [userId, postId, contentText];
+    const data = [userId, postId, newContentText];
     await pool.query(command, data);
     res.send("Comment added successfully");
   } catch (err) {
