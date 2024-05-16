@@ -18,12 +18,12 @@ export const login = async (req, res) => {
       "SELECT * FROM users WHERE username = ? and deletedAt is null",
       [username]
     );
-
+    
+    console.log(username);
     if (user.length === 0) {
       throw new Error("User is not exist");
     }
-    // console.log(user);
-    const passwordHash = user[0].passwordHash === 'admin' ? await argon2.hash(user[0].passwordHash) : user[0].passwordHash;
+    const passwordHash = user[0].passwordHash;
 
     if (!(await argon2.verify(passwordHash, password))) {
       throw new Error("Wrong password or username");

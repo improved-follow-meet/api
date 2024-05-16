@@ -84,9 +84,31 @@ export const getDeletedPosts = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const command = 'SELECT * FROM post_trash_can WHERE ownerId = (?)';
-    const posts = await pool.query(command, userId);
+    const command = "SELECT * FROM post_trash_can WHERE ownerId = (?) ORDER BY deletedAt DESC;";
+    const [posts, fields2] = await pool.query(command, [userId]);
     res.send(posts);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
+
+export const restoreDeletedPost = async (req, res) => {
+  const userId = req.user.id;
+  const { deletedPostId } = req.body;
+
+  try {
+    const command = "DELETE FROM post_trash_can WHERE id = (?) AND ownerId = (?);";
+    const respone = await pool.query(command, [deletedPostId, userId]);
+    // console.log(respone); 
+    const affectedRows = respone[0].affectedRows;
+
+    if (affectedRows === 0) {
+      res.send("No rows were restored.")
+    } else if (affectedRows === 1) {
+      res.send("Restore post successfully.");
+    } else {
+      res.send("Restore post failed.");
+    }
   } catch (err) {
     res.status(500).send(err.message);
   }
