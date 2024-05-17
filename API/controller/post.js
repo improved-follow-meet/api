@@ -22,6 +22,32 @@ export const getPostsUserFollowing = async (req, res) => {
   }
 };
 
+const wordFilter = async (sentence) => {
+  let words = sentence.split(" ");
+  let newSentence = "";
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i];
+    try {
+      const { body } = await esClient.search({
+        index: "wordfilter",
+        body: {
+          query: {
+            match: { word: word },
+          },
+        },
+      });
+      if (body.hits.hits.length > 0) {
+        newSentence += "*".repeat(word.length) + " ";
+      } else {
+        newSentence += word + " ";
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  return newSentence;
+}
+
 export const getPostsOfUser = async (req, res) => {
   const userId = req.query.userId;
 
@@ -64,18 +90,17 @@ export const getPostsOfUser = async (req, res) => {
 export const addPost = async (req, res) => {
   const userId = req.user.id;
   const { contentImg, contentText } = req.body;
-  console.log(req.body);
+  const newContentText = await wordFilter(contentText);
 
-  // CALL STORED PROCEDURE createPost(userId, contentImg, contentText)
   try {
     const command = 'CALL createPost(?, ?, ?)';
-    const data = [userId, contentImg, contentText];
+    const data = [userId, contentImg, newContentText];
     await pool.query(command, data);
     res.send("Post added successfully");
   } catch (err) {
     res.status(500).send(err.message);
   }
-};
+}
 
 export const deletePost = async (req, res) => {
   const userId = req.user.id;
