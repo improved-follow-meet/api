@@ -175,21 +175,14 @@ export const getDeletedPosts = async (req, res) => {
 }
 
 export const restoreDeletedPost = async (req, res) => {
-  const { deletedPostId } = req.body;
+  const { postId } = req.body;
 
   try {
-    const command = "CALL restorePost(?);";
-    const respone = await pool.query(command, [deletedPostId]);
-    // console.log(respone); 
-    const affectedRows = respone[0].affectedRows;
-
-    if (affectedRows === 0) {
-      res.send("No rows were restored.")
-    } else if (affectedRows === 1) {
-      res.send("Restore post successfully.");
-    } else {
-      res.send("Restore post failed.");
-    }
+    const command = 'CALL restorePost(?);';
+    console.log(postId);
+    const data = [postId];
+    await pool.query(command, data);
+    res.send("Post restored successfully");
   } catch (err) {
     res.status(500).send(err.message);
   }
