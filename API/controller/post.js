@@ -6,7 +6,8 @@ export const getPostsUserFollowing = async (req, res) => {
   const userId = req.user.id;
   try {
     let command =
-      "SELECT * FROM posts INNER JOIN user_follow_user ON posts.ownerId = user_follow_user.userTargetId WHERE user_follow_user.deletedAt is null and posts.deletedAt is null and user_follow_user.userSourceId = (?) order by posts.createdAt desc;";
+      // "SELECT * FROM posts INNER JOIN user_follow_user ON posts.ownerId = user_follow_user.userTargetId WHERE user_follow_user.deletedAt is null and posts.deletedAt is null and user_follow_user.userSourceId = (?) order by posts.createdAt desc;";
+      "SELECT * FROM posts ORDER BY createdAt DESC;";
     const [posts, fields2] = await pool.query(command, [userId]);
     if (posts.length === 0) {
       let command =
@@ -122,61 +123,66 @@ export const deletePost = async (req, res) => {
   }
 };
 
+// export const getDeletedPosts = async (req, res) => {
+//   const userId = req.user.id;
+
+//   try {
+//     const { body } = await esClient.search({
+//       index: "posts",
+//       filter_path: ["hits.hits._source", "aggregations.*"],
+//       sort: ["createdAt:desc"],
+//       size: 10000,
+//       body: {
+//         query: {
+//           bool: {
+//             must: [
+//               {
+//                 exists: {
+//                   field: "deletedAt"
+//                 }
+//               }
+//             ],
+//             must: [
+//               { match: { ownerId: userId } },
+//             ],
+//           },
+//         },
+//       }
+//     });
+
+//     if (!body.hits) {
+//       res.status(404).send("No results found");
+//       return;
+//     }
+
+//     console.log(body.hits.hits);
+//     res.send(body.hits.hits.map((hit) => hit._source));
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// }
+
 export const getDeletedPosts = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const { body } = await esClient.search({
-      index: "posts",
-      filter_path: ["hits.hits._source", "aggregations.*"],
-      sort: ["createdAt:desc"],
-      size: 10000,
-      body: {
-        query: {
-          bool: {
-            must: [
-              {
-                exists: {
-                  field: "deletedAt"
-                }
-              }
-            ],
-            must: [
-              { match: { ownerId: userId } },
-            ],
-          },
-        },
-      }
-    });
-
-    if (!body.hits) {
-      res.status(404).send("No results found");
-      return;
-    }
-
-    console.log(body.hits.hits);
-    res.send(body.hits.hits.map((hit) => hit._source));
+    const command = "SELECT * FROM posts AS p INNER JOIN (SELECT id FROM post_trash_can WHERE ownerId = (?)) AS pc USING(id) ORDER BY p.deletedAt DESC;";
+    const [posts, fields2] = await pool.query(command, [userId]);
+    res.send(posts);
   } catch (err) {
     res.status(500).send(err.message);
   }
 }
 
 export const restoreDeletedPost = async (req, res) => {
-  const { deletedPostId } = req.body;
+  const { postId } = req.body;
 
   try {
-    const command = "CALL restorePost(?);";
-    const respone = await pool.query(command, [deletedPostId]);
-    // console.log(respone); 
-    const affectedRows = respone[0].affectedRows;
-
-    if (affectedRows === 0) {
-      res.send("No rows were restored.")
-    } else if (affectedRows === 1) {
-      res.send("Restore post successfully.");
-    } else {
-      res.send("Restore post failed.");
-    }
+    const command = 'CALL restorePost(?);';
+    console.log(postId);
+    const data = [postId];
+    await pool.query(command, data);
+    res.send("Post restored successfully");
   } catch (err) {
     res.status(500).send(err.message);
   }
