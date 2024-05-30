@@ -6,12 +6,11 @@ export const getPostsUserFollowing = async (req, res) => {
   const userId = req.user.id;
   try {
     let command =
-      // "SELECT * FROM posts INNER JOIN user_follow_user ON posts.ownerId = user_follow_user.userTargetId WHERE user_follow_user.deletedAt is null and posts.deletedAt is null and user_follow_user.userSourceId = (?) order by posts.createdAt desc;";
-      "SELECT * FROM posts ORDER BY createdAt DESC;";
+      "SELECT * FROM posts INNER JOIN user_follow_user ON posts.ownerId = user_follow_user.userTargetId WHERE user_follow_user.deletedAt is null and posts.deletedAt is null and user_follow_user.userSourceId = (?) order by RAND();";
     const [posts, fields2] = await pool.query(command, [userId]);
     if (posts.length === 0) {
       let command =
-        "SELECT * FROM posts WHERE ownerId != (?) and deletedAt is null order by createdAt desc;";
+        "SELECT * FROM posts WHERE ownerId != (?) and deletedAt is null order by RAND() desc LIMIT 10;";
       const [posts, fields2] = await pool.query(command, [userId]);
       res.send(posts);
     } else {
