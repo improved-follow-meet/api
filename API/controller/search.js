@@ -12,7 +12,28 @@ export const searchPost = async (req, res) => {
       size: 5,
       body: {
         query: {
-          match: { contentText: { query: query, fuzziness: "AUTO", analyzer: "standard" } },
+          // must match: { contentText: { query: query, fuzziness: "AUTO", analyzer: "standard" } },
+          // must not deletedAt
+          bool: {
+            must: [
+              {
+                match: {
+                  contentText: {
+                    query: query,
+                    fuzziness: "AUTO",
+                    analyzer: "standard",
+                  },
+                },
+              },
+            ],
+            must_not: [
+              {
+                exists: {
+                  field: "deletedAt",
+                },
+              },
+            ],
+          }, // Add closing parenthesis here
         },
       },
     });
