@@ -98,8 +98,17 @@ export const logout = async (req, res) => {
       new Date(),
       userId,
     ]);
-    res.clearCookie('access');
-    res.clearCookie('refresh');
+    res.clearCookie('access', {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None"
+    });
+
+    res.clearCookie('refresh', {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None"
+    });
     res.send("Logout successfully");
   } catch (err) {
     console.error(err.message);
